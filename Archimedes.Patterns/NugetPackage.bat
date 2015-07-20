@@ -1,0 +1,1 @@
+nuget pack Archimedes.Patterns.csproj -IncludeReferencedProjects -Prop Configuration=Release
