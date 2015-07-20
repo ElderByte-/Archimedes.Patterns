@@ -53,3 +53,5 @@ shared
 #ignore nuget packages
 /packages/
 !packages/repositories.config
+
+*.nupkg
