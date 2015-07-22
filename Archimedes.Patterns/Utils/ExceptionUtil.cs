@@ -19,5 +19,23 @@ namespace Archimedes.Patterns.Utils
 
             return ex.Message + Environment.NewLine + ComposeDetailMessage(ex.InnerException);
         }
+
+        /// <summary>
+        /// Creates a single line message which contains all messages from the exception hirarchy.
+        /// </summary>
+        /// <param name="e"></param>
+        /// <param name="includeExceptionType"></param>
+        /// <returns></returns>
+        public static string ComposeSingleLineMessage(Exception e, bool includeExceptionType = false)
+        {
+            string message = "";
+            while (e != null)
+            {
+                message += (includeExceptionType ? e.GetType().Name + ": " : "")
+                    + e.Message + " ";
+                e = e.InnerException;
+            }
+            return message;
+        }
     }
 }

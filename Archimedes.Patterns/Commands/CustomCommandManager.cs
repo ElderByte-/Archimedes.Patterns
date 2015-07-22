@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Archimedes.DI.AOP;
 using Archimedes.Patterns.Data;
 
 namespace Archimedes.Patterns.Commands
@@ -8,7 +7,6 @@ namespace Archimedes.Patterns.Commands
     /// <summary>
     /// Holds all executed Commands 
     /// </summary>
-    [Service]
     public class CustomCommandManager : ICommandManager
     {
         #region Fields

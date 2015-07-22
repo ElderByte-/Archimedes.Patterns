@@ -1,19 +1,15 @@
-﻿
-
-using Archimedes.DI.AOP;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Diagnostics;
 
 namespace Archimedes.Patterns.MVMV.ViewModels.PoolCache
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Diagnostics;
+
 
     /// <summary>
     /// Pool for common used ViewModels
     /// </summary>
-    [Service]
     public class ViewModelPoolService : IViewModelPoolService
     {
         readonly Dictionary<Type, ICacheable> _viewModels = new Dictionary<Type, ICacheable>();

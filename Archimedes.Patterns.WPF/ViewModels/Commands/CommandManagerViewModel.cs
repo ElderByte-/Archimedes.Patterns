@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Input;
-using Archimedes.DI.AOP;
 using Archimedes.Patterns.WPF.Commands;
 using Archimedes.Patterns.Commands;
 using Archimedes.Patterns.Data;
@@ -14,7 +13,6 @@ namespace Archimedes.Patterns.WPF.ViewModels.Commands
     /// <summary>
     /// UI friendly wrapper of CommandManager
     /// </summary>
-    [Controller]
     public class CommandManagerViewModel : WorkspaceViewModel, ICacheable
     {
         #region Fields
@@ -36,7 +34,6 @@ namespace Archimedes.Patterns.WPF.ViewModels.Commands
 
         #region Constructor
 
-        [Inject]
         public CommandManagerViewModel(ICommandManager manager) {
             if (manager == null)
                 throw new ArgumentNullException("manager");

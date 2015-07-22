@@ -94,11 +94,6 @@
     <Compile Include="Deployment\Installable.cs" />
     <Compile Include="Deployment\IVersionStore.cs" />
     <Compile Include="Deployment\XMLVersionStore.cs" />
-    <Compile Include="DI\ComponentAttribute.cs" />
-    <Compile Include="DI\ControllerAttribute.cs" />
-    <Compile Include="DI\InjectAttribute.cs" />
-    <Compile Include="DI\PrimaryAttribute.cs" />
-    <Compile Include="DI\ServiceAttribute.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="FileSizeFormatProvider.cs" />
     <Compile Include="ICloneable.cs" />
