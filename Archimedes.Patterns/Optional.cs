@@ -17,7 +17,7 @@ namespace Archimedes.Patterns
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">Thrown if the value was null</exception>
-        public static Optional<TN> Of<TN>(TN value) where TN : class
+        public static Optional<TN> Of<TN>(TN value)
         {
             if (value == null) throw new ArgumentNullException("value");
             return new Optional<TN>(value);
@@ -29,7 +29,7 @@ namespace Archimedes.Patterns
         /// <typeparam name="TN"></typeparam>
         /// <param name="nullable"></param>
         /// <returns></returns>
-        public static Optional<TN> OfNullable<TN>(TN nullable) where TN : class
+        public static Optional<TN> OfNullable<TN>(TN nullable)
         {
             return nullable != null ? Of(nullable) : new Optional<TN>();
         }
@@ -38,7 +38,7 @@ namespace Archimedes.Patterns
         /// Returns a Optional which does not contain a value.
         /// </summary>
         /// <returns></returns>
-        public static Optional<TN> Empty<TN>() where TN : class
+        public static Optional<TN> Empty<TN>()
         {
             return new Optional<TN>();
         }
@@ -57,7 +57,7 @@ namespace Archimedes.Patterns
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public struct Optional<T> where T : class
+    public struct Optional<T>
     {
         #region Fields
 
@@ -151,7 +151,7 @@ namespace Archimedes.Patterns
         /// <typeparam name="TOut">The output type of the maping function</typeparam>
         /// <param name="mapper"></param>
         /// <returns></returns>
-        public Optional<TOut> Map<TOut>(Func<T, TOut> mapper) where TOut : class
+        public Optional<TOut> Map<TOut>(Func<T, TOut> mapper)
         {
             if (IsPresent)
             {
@@ -168,7 +168,7 @@ namespace Archimedes.Patterns
         /// <typeparam name="TOut">The output type of the maping function</typeparam>
         /// <param name="mapper"></param>
         /// <returns></returns>
-        public Optional<TOut> FlatMap<TOut>(Func<T, Optional<TOut>> mapper) where TOut : class
+        public Optional<TOut> FlatMap<TOut>(Func<T, Optional<TOut>> mapper)
         {
             if (IsPresent)
             {
