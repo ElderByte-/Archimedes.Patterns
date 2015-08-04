@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Archimedes.Patterns.Utils
 {
@@ -13,6 +10,25 @@ namespace Archimedes.Patterns.Utils
     /// </summary>
     public static class ParseUtil
     {
+        /// <summary>
+        /// Parses the given string to an integer. If that fails, returns the fallback value.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fallback"></param>
+        /// <returns></returns>
+        public static int ParseInt(string str, int fallback)
+        {
+            try
+            {
+                return ParseInt(str);
+            }
+            catch (FormatException)
+            {
+                return fallback;
+            }
+        } 
+
+
         /// <summary>
         /// Parses the given string to an integer
         /// </summary>
@@ -28,6 +44,25 @@ namespace Archimedes.Patterns.Utils
             }
             throw new FormatException(string.Format("Failed to parse string '{0}' to an integer!", str));
         }
+
+
+        /// <summary>
+        /// Parses the given string to an long. If that fails, returns the fallback value.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fallback"></param>
+        /// <returns></returns>
+        public static long ParseLong(string str, long fallback)
+        {
+            try
+            {
+                return ParseLong(str);
+            }
+            catch (FormatException)
+            {
+                return fallback;
+            }
+        } 
 
         /// <summary>
         /// Parses the given string to an long
@@ -45,6 +80,25 @@ namespace Archimedes.Patterns.Utils
             throw new FormatException(string.Format("Failed to parse string '{0}' to an long!", str));
         }
 
+
+        /// <summary>
+        /// Parses the given string to an double. If that fails, returns the fallback value.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fallback"></param>
+        /// <returns></returns>
+        public static double ParseDouble(string str, double fallback)
+        {
+            try
+            {
+                return ParseDouble(str);
+            }
+            catch (FormatException)
+            {
+                return fallback;
+            }
+        } 
+
         /// <summary>
         /// Parses the given string to an double
         /// </summary>
@@ -60,6 +114,25 @@ namespace Archimedes.Patterns.Utils
             }
             throw new FormatException(string.Format("Failed to parse string '{0}' to an double!", str));
         }
+
+
+        /// <summary>
+        /// Parses the given string to an float. If that fails, returns the fallback value.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fallback"></param>
+        /// <returns></returns>
+        public static float ParseFloat(string str, float fallback)
+        {
+            try
+            {
+                return ParseFloat(str);
+            }
+            catch (FormatException)
+            {
+                return fallback;
+            }
+        } 
 
 
         /// <summary>
@@ -80,6 +153,25 @@ namespace Archimedes.Patterns.Utils
 
 
         /// <summary>
+        /// Parses the given string to an decimal. If that fails, returns the fallback value.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fallback"></param>
+        /// <returns></returns>
+        public static decimal ParseDecimal(string str, decimal fallback)
+        {
+            try
+            {
+                return ParseDecimal(str);
+            }
+            catch (FormatException)
+            {
+                return fallback;
+            }
+        } 
+
+
+        /// <summary>
         /// Parses the given string to an decimal
         /// </summary>
         /// <exception cref="FormatException">Thrown when the string is not a valid decimal number</exception>
@@ -94,6 +186,25 @@ namespace Archimedes.Patterns.Utils
             }
             throw new FormatException(string.Format("Failed to parse string '{0}' to an decimal!", str));
         }
+
+
+        /// <summary>
+        /// Parses the given string to an bool. If that fails, returns the fallback value.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fallback"></param>
+        /// <returns></returns>
+        public static bool ParseBool(string str, bool fallback)
+        {
+            try
+            {
+                return ParseBool(str);
+            }
+            catch (FormatException)
+            {
+                return fallback;
+            }
+        } 
 
 
         /// <summary>
@@ -112,6 +223,25 @@ namespace Archimedes.Patterns.Utils
             throw new FormatException(string.Format("Failed to parse string '{0}' to an bool!", str));
         }
 
+
+        /// <summary>
+        /// Parses the given string to an Guid. If that fails, returns the fallback value.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fallback"></param>
+        /// <returns></returns>
+        public static Guid ParseGuid(string str, Guid fallback)
+        {
+            try
+            {
+                return ParseGuid(str);
+            }
+            catch (FormatException)
+            {
+                return fallback;
+            }
+        } 
+
         /// <summary>
         /// Parses the given string to an double
         /// </summary>
@@ -127,6 +257,26 @@ namespace Archimedes.Patterns.Utils
             }
             throw new FormatException(string.Format("Failed to parse string '{0}' to an Guid!", str));
         }
+
+
+
+        /// <summary>
+        /// Parses the given string to an Guid. If that fails, returns the fallback value.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="fallback"></param>
+        /// <returns></returns>
+        public static T ParseEnum<T>(string str, T fallback) where T : struct, IConvertible
+        {
+            try
+            {
+                return ParseEnum<T>(str);
+            }
+            catch (FormatException)
+            {
+                return fallback;
+            }
+        } 
 
 
         /// <summary>
@@ -150,7 +300,7 @@ namespace Archimedes.Patterns.Utils
             {
                 return value;
             }
-            throw new FormatException(string.Format("Failed to parse string '{0}' to an decimal!", str));
+            throw new FormatException(string.Format("Failed to parse string '{0}' to Enum {1}!", str, typeof(T)));
         }
 
     }
