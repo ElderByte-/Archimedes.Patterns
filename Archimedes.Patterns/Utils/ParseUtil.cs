@@ -87,7 +87,7 @@ namespace Archimedes.Patterns.Utils
 
             // First try to handle specail cases
 
-            if (typeof (T) == typeof (string)) return (T)(object)value;
+            if (typeof (T) == typeof(string)) return (T)(object)value;
 
             if (typeof(T).IsEnum) return EnumTryParse<T>(value);
 
