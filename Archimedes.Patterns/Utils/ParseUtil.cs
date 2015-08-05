@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Archimedes.Patterns.Utils
 {
@@ -10,94 +11,100 @@ namespace Archimedes.Patterns.Utils
     /// </summary>
     public static class ParseUtil
     {
+
         /// <summary>
-        /// Parses the given string to an integer. If that fails, returns the fallback value.
+        /// Try to parese the given object to the given type. Returns an optional result, depending on success.
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="fallback"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
         /// <returns></returns>
-        public static int ParseInt(string str, int fallback)
+        public static Optional<T> ParseSave<T>(object value)
         {
+            if (value == null) return Optional.Empty<T>();
+
             try
             {
-                return ParseInt(str);
+                return Optional.Of(Parse<T>(value));
             }
             catch (FormatException)
             {
-                return fallback;
+                return Optional.Empty<T>();
             }
         } 
 
+        /// <summary>
+        /// Try to parese the given string to the given type. Returns an optional result, depending on success.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static Optional<T> ParseSave<T>(string value)
+        {
+            if (value == null) return Optional.Empty<T>();
+
+            try
+            {
+                return Optional.Of(Parse<T>(value));
+            }
+            catch (FormatException)
+            {
+                return Optional.Empty<T>();
+            }
+        } 
 
         /// <summary>
-        /// Parses the given string to an integer
+        /// 
         /// </summary>
-        /// <exception cref="FormatException">Thrown when the string is not a valid integer number</exception>
-        /// <param name="str"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
         /// <returns></returns>
-        public static int ParseInt(string str)
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="FormatException"></exception>
+        public static T Parse<T>(object value)
         {
-            int value;
-            if (int.TryParse(str, out value))
+            if (value == null) throw new ArgumentNullException("value");
+
+            if (typeof (T) == value.GetType())
             {
-                return value;
+                return (T) value;
             }
-            throw new FormatException(string.Format("Failed to parse string '{0}' to an integer!", str));
+
+            return Parse<T>(value.ToString());
         }
 
-
         /// <summary>
-        /// Parses the given string to an long. If that fails, returns the fallback value.
+        /// Parses the given string to the desired type. If this is not possible, an FormatException is thrown.
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="fallback"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
         /// <returns></returns>
-        public static long ParseLong(string str, long fallback)
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="FormatException"></exception>
+        public static T Parse<T>(string value)
         {
+            if (value == null) throw new ArgumentNullException("value");
+
+
+            // First try to handle specail cases
+
+            if (typeof (T) == typeof (string)) return (T)(object)value;
+
+            if (typeof(T).IsEnum) return EnumTryParse<T>(value);
+
+            if (typeof(T) == typeof(Guid)) return (T)(object)ParseGuid(value);
+
+            // Hande the remainig cases with a generic converter
             try
             {
-                return ParseLong(str);
+                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
             }
-            catch (FormatException)
+            catch (Exception e)
             {
-                return fallback;
+                throw new FormatException(string.Format("Failed to parse string '{0}' to an {1}!", value, typeof(T)), e);
             }
-        } 
-
-        /// <summary>
-        /// Parses the given string to an long
-        /// </summary>
-        /// <exception cref="FormatException">Thrown when the string is not a valid long number</exception>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static long ParseLong(string str)
-        {
-            long value;
-            if (long.TryParse(str, out value))
-            {
-                return value;
-            }
-            throw new FormatException(string.Format("Failed to parse string '{0}' to an long!", str));
         }
 
-
-        /// <summary>
-        /// Parses the given string to an double. If that fails, returns the fallback value.
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="fallback"></param>
-        /// <returns></returns>
-        public static double ParseDouble(string str, double fallback)
-        {
-            try
-            {
-                return ParseDouble(str);
-            }
-            catch (FormatException)
-            {
-                return fallback;
-            }
-        } 
+        #region Private parse helpers
 
         /// <summary>
         /// Parses the given string to an double
@@ -105,150 +112,7 @@ namespace Archimedes.Patterns.Utils
         /// <exception cref="FormatException">Thrown when the string is not a valid double number</exception>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static double ParseDouble(string str)
-        {
-            double value;
-            if (double.TryParse(str, out value))
-            {
-                return value;
-            }
-            throw new FormatException(string.Format("Failed to parse string '{0}' to an double!", str));
-        }
-
-
-        /// <summary>
-        /// Parses the given string to an float. If that fails, returns the fallback value.
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="fallback"></param>
-        /// <returns></returns>
-        public static float ParseFloat(string str, float fallback)
-        {
-            try
-            {
-                return ParseFloat(str);
-            }
-            catch (FormatException)
-            {
-                return fallback;
-            }
-        } 
-
-
-        /// <summary>
-        /// Parses the given string to an float
-        /// </summary>
-        /// <exception cref="FormatException">Thrown when the string is not a valid float number</exception>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static float ParseFloat(string str)
-        {
-            float value;
-            if (float.TryParse(str, out value))
-            {
-                return value;
-            }
-            throw new FormatException(string.Format("Failed to parse string '{0}' to an float!", str));
-        }
-
-
-        /// <summary>
-        /// Parses the given string to an decimal. If that fails, returns the fallback value.
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="fallback"></param>
-        /// <returns></returns>
-        public static decimal ParseDecimal(string str, decimal fallback)
-        {
-            try
-            {
-                return ParseDecimal(str);
-            }
-            catch (FormatException)
-            {
-                return fallback;
-            }
-        } 
-
-
-        /// <summary>
-        /// Parses the given string to an decimal
-        /// </summary>
-        /// <exception cref="FormatException">Thrown when the string is not a valid decimal number</exception>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static decimal ParseDecimal(string str)
-        {
-            decimal value;
-            if (decimal.TryParse(str, out value))
-            {
-                return value;
-            }
-            throw new FormatException(string.Format("Failed to parse string '{0}' to an decimal!", str));
-        }
-
-
-        /// <summary>
-        /// Parses the given string to an bool. If that fails, returns the fallback value.
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="fallback"></param>
-        /// <returns></returns>
-        public static bool ParseBool(string str, bool fallback)
-        {
-            try
-            {
-                return ParseBool(str);
-            }
-            catch (FormatException)
-            {
-                return fallback;
-            }
-        } 
-
-
-        /// <summary>
-        /// Parses the given string to an boolean
-        /// </summary>
-        /// <exception cref="FormatException">Thrown when the string is not a valid boolean</exception>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static bool ParseBool(string str)
-        {
-            bool value;
-            if (bool.TryParse(str, out value))
-            {
-                return value;
-            }
-            throw new FormatException(string.Format("Failed to parse string '{0}' to an bool!", str));
-        }
-
-
-        /// <summary>
-        /// Parses the given string to an Guid. If that fails, returns the fallback value.
-        /// </summary>
-        /// <param name="str"></param>
-        /// <param name="fallback"></param>
-        /// <returns></returns>
-        public static Guid ParseGuid(string str, Guid fallback)
-        {
-            try
-            {
-                return ParseGuid(str);
-            }
-            catch (FormatException)
-            {
-                return fallback;
-            }
-        } 
-
-        /// <summary>
-        /// Parses the given string to an double
-        /// </summary>
-        /// <exception cref="FormatException">Thrown when the string is not a valid double number</exception>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static Guid ParseGuid(string str)
+        private static Guid ParseGuid(string str)
         {
             Guid value;
             if (Guid.TryParse(str, out value))
@@ -259,49 +123,31 @@ namespace Archimedes.Patterns.Utils
         }
 
 
-
         /// <summary>
-        /// Parses the given string to an Guid. If that fails, returns the fallback value.
+        /// 
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="fallback"></param>
-        /// <returns></returns>
-        public static T ParseEnum<T>(string str, T fallback) where T : struct, IConvertible
-        {
-            try
-            {
-                return ParseEnum<T>(str);
-            }
-            catch (FormatException)
-            {
-                return fallback;
-            }
-        } 
-
-
-        /// <summary>
-        /// Parses the given string to an Enum Value
-        /// </summary>
-        /// <exception cref="FormatException">Thrown when the string is not a valid enum member of the specified Enum Type</exception>
+        /// <typeparam name="T"></typeparam>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static T ParseEnum<T>(string str)
-            where T : struct, IConvertible
+        private static T EnumTryParse<T>(string str)
         {
-            T value;
-
             if (!typeof(T).IsEnum)
             {
-                throw new ArgumentException("T must be an enumerated type");
+                throw new ArgumentException(string.Format("You must only use Enum Types for parameter T! '{0}' is not an enum type!", typeof(T)));
             }
 
-
-            if (Enum.TryParse(str, out value))
+            foreach (string en in Enum.GetNames(typeof(T)))
             {
-                return value;
+                if (en.Equals(str, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return (T)Enum.Parse(typeof(T), str, true);
+                }
             }
-            throw new FormatException(string.Format("Failed to parse string '{0}' to Enum {1}!", str, typeof(T)));
+
+            throw new FormatException(string.Format("The value '{0}' is not a valid member of enum {1}", str, typeof(T)));
         }
+
+        #endregion
 
     }
 }
