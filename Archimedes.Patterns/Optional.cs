@@ -62,6 +62,7 @@ namespace Archimedes.Patterns
         #region Fields
 
         private readonly T _value;
+        private readonly bool _hasValue;
 
         #endregion
 
@@ -74,6 +75,7 @@ namespace Archimedes.Patterns
         internal Optional(T value)
         {
             _value = value;
+            _hasValue = true;
         }
 
         #endregion
@@ -102,7 +104,7 @@ namespace Archimedes.Patterns
         {
             get
             {
-                return _value != null;
+                return _hasValue && _value != null;
             }
         }
 
