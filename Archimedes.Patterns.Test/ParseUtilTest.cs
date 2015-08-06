@@ -18,10 +18,35 @@ namespace Archimedes.Patterns.Test
             Assert.AreEqual(true, ParseUtil.Parse<bool>("true"));
         }
 
+
+        [Test]
+        public void TestParseEnums()
+        {
+            Assert.AreEqual(TestEnum.Entry2, ParseUtil.Parse<TestEnum>("Entry2"));
+            Assert.AreEqual(TestEnum.Entry1, ParseUtil.Parse<TestEnum>(0));
+            Assert.AreEqual(TestEnum.Entry2, ParseUtil.Parse<TestEnum>("1"));
+            Assert.AreEqual(TestEnum.Entry3, ParseUtil.Parse<TestEnum>(2));
+            Assert.AreEqual(TestEnum.Entry3, ParseUtil.Parse<TestEnum>("2"));
+        }
+
+        [Test]
+        [ExpectedException(typeof(FormatException))]
+        public void TestParseEnumsFailName()
+        {
+            Assert.AreEqual(TestEnum.Entry2, ParseUtil.Parse<TestEnum>("Entry2uuuu"));
+        }
+
+        [Test]
+        [ExpectedException(typeof(FormatException))]
+        public void TestParseEnumsFailIndex()
+        {
+            var enumVal = ParseUtil.Parse<TestEnum>("12");
+        }
+
         [Test]
         public void TestParseComplex()
+               
         {
-            Assert.AreEqual(MessageMatch.Regex, ParseUtil.Parse<MessageMatch>("Regex"));
             Assert.AreEqual(Guid.Parse("9A87A428-5E16-485F-833C-AAAE7B2CF203"), ParseUtil.Parse<Guid>("9A87A428-5E16-485F-833C-AAAE7B2CF203"));
         }
 

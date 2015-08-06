@@ -136,15 +136,32 @@ namespace Archimedes.Patterns.Utils
                 throw new ArgumentException(string.Format("You must only use Enum Types for parameter T! '{0}' is not an enum type!", typeof(T)));
             }
 
-            foreach (string en in Enum.GetNames(typeof(T)))
-            {
-                if (en.Equals(str, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    return (T)Enum.Parse(typeof(T), str, true);
-                }
-            }
+            var enumIndexO = ParseSave<int>(str);
 
-            throw new FormatException(string.Format("The value '{0}' is not a valid member of enum {1}", str, typeof(T)));
+            if (enumIndexO.IsPresent)
+            {
+                int enumIndex = enumIndexO.Value;
+                T enumValue = (T)(object)enumIndex; // This allows any number to be converted in an Enum
+
+                if (!Enum.IsDefined(typeof(T), enumValue))
+                {
+                    throw new FormatException(string.Format("The enum Index {0} does not exist in Enum {1}", enumIndex, typeof(T)));
+                }
+
+                return enumValue;
+            }
+            else
+            {
+                foreach (string en in Enum.GetNames(typeof(T)))
+                {
+                    if (en.Equals(str, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        return (T)Enum.Parse(typeof(T), str, true);
+                    }
+                }
+
+                throw new FormatException(string.Format("The value '{0}' is not a valid member of enum {1}", str, typeof(T)));
+            }
         }
 
         #endregion
