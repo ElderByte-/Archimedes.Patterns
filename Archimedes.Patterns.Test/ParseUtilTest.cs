@@ -18,6 +18,16 @@ namespace Archimedes.Patterns.Test
             Assert.AreEqual(true, ParseUtil.Parse<bool>("true"));
         }
 
+        [Test]
+        public void TestFloatingPoint()
+        {
+            Assert.AreEqual(3213.33423433f, ParseUtil.Parse<float>("3213.33423433"));
+            Assert.AreEqual(3213.33423433, ParseUtil.Parse<double>("3213.33423433"));
+            Assert.AreEqual(18373.33, ParseUtil.Parse<decimal>("18373.33"));
+
+            Assert.AreEqual(18373.33, ParseUtil.Parse<decimal>(18373.33));
+        }
+
 
         [Test]
         public void TestParseEnums()

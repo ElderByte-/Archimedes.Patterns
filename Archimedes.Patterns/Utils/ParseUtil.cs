@@ -12,64 +12,69 @@ namespace Archimedes.Patterns.Utils
     public static class ParseUtil
     {
 
+        private static readonly CultureInfo DefaultCulture = CultureInfo.CurrentUICulture;
+
         /// <summary>
         /// Try to parese the given object to the given type. Returns an optional result, depending on success.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value"></param>
+        /// <param name="culture"></param>
         /// <returns></returns>
-        public static Optional<T> ParseSave<T>(object value)
+        public static Optional<T> ParseSave<T>(object value, CultureInfo culture = null)
         {
             if (value == null) return Optional.Empty<T>();
 
             try
             {
-                return Optional.Of(Parse<T>(value));
+                return Optional.Of(Parse<T>(value, culture));
             }
             catch (FormatException)
             {
                 return Optional.Empty<T>();
             }
-        } 
+        }
 
         /// <summary>
         /// Try to parese the given string to the given type. Returns an optional result, depending on success.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value"></param>
+        /// <param name="culture"></param>
         /// <returns></returns>
-        public static Optional<T> ParseSave<T>(string value)
+        public static Optional<T> ParseSave<T>(string value, CultureInfo culture = null)
         {
             if (value == null) return Optional.Empty<T>();
 
             try
             {
-                return Optional.Of(Parse<T>(value));
+                return Optional.Of(Parse<T>(value, culture));
             }
             catch (FormatException)
             {
                 return Optional.Empty<T>();
             }
-        } 
+        }
 
         /// <summary>
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value"></param>
+        /// <param name="culture">Optionally specify the culture.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="FormatException"></exception>
-        public static T Parse<T>(object value)
+        public static T Parse<T>(object value, CultureInfo culture = null)
         {
             if (value == null) throw new ArgumentNullException("value");
+            culture = culture ?? DefaultCulture;
 
             if (typeof (T) == value.GetType())
             {
                 return (T) value;
             }
-
-            return Parse<T>(value.ToString());
+            return Parse<T>(Convert.ToString(value, culture));
         }
 
         /// <summary>
@@ -77,12 +82,14 @@ namespace Archimedes.Patterns.Utils
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value"></param>
+        /// <param name="culture">Optionally specify the culture.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="FormatException"></exception>
-        public static T Parse<T>(string value)
+        public static T Parse<T>(string value, CultureInfo culture = null)
         {
             if (value == null) throw new ArgumentNullException("value");
+            culture = culture ?? DefaultCulture;
 
 
             // First try to handle specail cases
@@ -96,11 +103,11 @@ namespace Archimedes.Patterns.Utils
             // Hande the remainig cases with a generic converter
             try
             {
-                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
+                return (T)Convert.ChangeType(value, typeof(T), culture);
             }
             catch (Exception e)
             {
-                throw new FormatException(string.Format("Failed to parse string '{0}' to an {1}!", value, typeof(T)), e);
+                throw new FormatException(string.Format("Failed to parse string '{0}' to an {1} with culture {2}!", value, typeof(T), culture), e);
             }
         }
 
