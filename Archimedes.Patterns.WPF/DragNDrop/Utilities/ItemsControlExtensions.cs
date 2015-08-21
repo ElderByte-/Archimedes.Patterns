@@ -65,21 +65,26 @@ namespace Archimedes.Patterns.WPF.DragNDrop.Utilities
             // panel and the first child of that *should* be an item container.
             //
             // If the control currently has no items, we're out of luck.
-            if (itemsControl.Items.Count > 0)
+            if (itemsControl.Items.Count <= 0) return null;
+
+            var itemsPresenters = itemsControl.GetVisualDescendents<ItemsPresenter>();
+            if (itemsPresenters != null)
             {
-                IEnumerable<ItemsPresenter> itemsPresenters = itemsControl.GetVisualDescendents<ItemsPresenter>();
-
-                foreach (ItemsPresenter itemsPresenter in itemsPresenters)
+                foreach (var itemsPresenter in itemsPresenters)
                 {
-                    DependencyObject panel = VisualTreeHelper.GetChild(itemsPresenter, 0);
-                    DependencyObject itemContainer = VisualTreeHelper.GetChild(panel, 0);
+                    DependencyObject panel = VisualTreeHelper.GetChildrenCount(itemsPresenter) > 0 ? VisualTreeHelper.GetChild(itemsPresenter, 0) : null;
 
-                    // Ensure that this actually *is* an item container by checking it with
-                    // ItemContainerGenerator.
-                    if (itemContainer != null &&
-                        itemsControl.ItemContainerGenerator.IndexFromContainer(itemContainer) != -1)
+                    if (panel != null)
                     {
-                        return itemContainer.GetType();
+                        DependencyObject itemContainer = VisualTreeHelper.GetChildrenCount(panel) > 0 ? VisualTreeHelper.GetChild(panel, 0) : null;
+
+                        // Ensure that this actually *is* an item container by checking it with
+                        // ItemContainerGenerator.
+                        if (itemContainer != null &&
+                            itemsControl.ItemContainerGenerator.IndexFromContainer(itemContainer) != -1)
+                        {
+                            return itemContainer.GetType();
+                        }
                     }
                 }
             }
