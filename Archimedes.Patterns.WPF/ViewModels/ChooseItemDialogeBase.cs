@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
-using System.Windows.Input;
-using Archimedes.Patterns.WPF.Commands;
+using Archimedes.Patterns.WPF.Properties;
 
 namespace Archimedes.Patterns.WPF.ViewModels
 {
@@ -29,9 +26,9 @@ namespace Archimedes.Patterns.WPF.ViewModels
 
         protected override IEnumerable<DialogCommand> BuildCommands()
         {
-           yield return BuildDefaultCommand("Abbrechen", DialogResultType.Cancel, false, true);
+           yield return BuildDefaultCommand(Resources.Dialog_Abort, DialogResultType.Cancel, false, true);
 
-           var chooseCommand = BuildDefaultCommand("Wählen", DialogResultType.Affirmative, true);
+           var chooseCommand = BuildDefaultCommand(Resources.Dialog_Choose, DialogResultType.Affirmative, true);
            chooseCommand.CustomAction = o => ChooseSelectedItem();
            chooseCommand.CustomCanExecute = o => CanChooseSelectedItem;
            yield return chooseCommand;
