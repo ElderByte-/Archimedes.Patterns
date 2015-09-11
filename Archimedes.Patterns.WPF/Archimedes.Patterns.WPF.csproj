@@ -140,6 +140,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ACB\Design\ACB.cd" />
+    <None Include="Archimedes.Patterns.WPF.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Archimedes.snk" />
   </ItemGroup>
   <ItemGroup>

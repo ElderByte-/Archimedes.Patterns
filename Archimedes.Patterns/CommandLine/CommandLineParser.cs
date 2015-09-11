@@ -33,6 +33,7 @@ namespace Archimedes.Patterns.CommandLine
         /// 
         /// [parameter1 parameter2 parameter3] /flag /flagWithValue value
         /// [parameter1 parameter2 parameter3] -flag -flagWithValue value
+        /// [parameter1 parameter2 parameter3] --flag --flagWithValue value
         /// 
         /// 
         /// Specifing a flag without a value is equally as setting it to true
@@ -63,7 +64,7 @@ namespace Archimedes.Patterns.CommandLine
                 }
                 else
                 {
-                    // Argument
+                    // Simple Argument without any flag/id
                     if (currentFlag == null)
                     {
                         commandLineOptions.AddArgument(current);
@@ -74,6 +75,12 @@ namespace Archimedes.Patterns.CommandLine
                         currentFlag = null;
                     }
                 }
+            }
+
+            // If last param is flag without param
+            if (currentFlag != null)
+            {
+                commandLineOptions.SetParameterEnabled(currentFlag);
             }
 
             return commandLineOptions;

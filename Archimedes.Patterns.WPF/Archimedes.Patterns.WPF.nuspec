@@ -13,4 +13,7 @@
     <copyright>Copyright 2015</copyright>
     <tags></tags>
   </metadata>
+  <files>
+	<file src="bin/Release/**/*.resources.dll" target="lib/net40"/>
+  </files>
 </package>
