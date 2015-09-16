@@ -66,7 +66,12 @@ namespace Archimedes.Patterns.Test
             Assert.AreEqual(true.ToString(), options.GetParameterValue("quiet"));
         }
 
-
-
+        [Test]
+        public void ParseTestSpecail()
+        {
+            string[] args = { "/erp.connection", @"C:\Temp\Planung\DATA-007_Zu" };
+            var options = CommandLineParser.ParseCommandLineArgs(args);
+            Assert.AreEqual(@"C:\Temp\Planung\DATA-007_Zu", options.GetParameterValue("erp.connection"));
+        }
     }
 }

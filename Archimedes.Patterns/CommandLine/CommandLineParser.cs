@@ -46,7 +46,7 @@ namespace Archimedes.Patterns.CommandLine
         public static CommandLineOptions ParseCommandLineArgs(string[] args)
         {
             var commandLineOptions = new CommandLineOptions();
-            var flagParser = new Regex("[/|-](.*)$");
+            var flagParser = new Regex("^[/|-](.*)$");
 
             string currentFlag = null;
 
