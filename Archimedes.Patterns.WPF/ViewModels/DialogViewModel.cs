@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Archimedes.Localisation;
 
 namespace Archimedes.Patterns.WPF.ViewModels
 {
@@ -62,7 +63,7 @@ namespace Archimedes.Patterns.WPF.ViewModels
         /// <returns></returns>
         protected virtual IEnumerable<DialogCommand> BuildCommands()
         {
-            yield return BuildDefaultCommand("OK", DialogResultType.Affirmative, true);
+            yield return BuildDefaultCommand(Translator.GetTranslation("dialog.ok"), DialogResultType.Affirmative, true);
         }
 
 
