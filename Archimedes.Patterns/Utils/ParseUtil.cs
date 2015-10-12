@@ -36,6 +36,29 @@ namespace Archimedes.Patterns.Utils
         }
 
         /// <summary>
+        /// Try to parese the given object to the given type. Returns an optional result, depending on success.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
+        public static Optional<object> ParseSave(object value, Type targetType, CultureInfo culture = null)
+        {
+            if (value == null) return Optional.Empty<object>();
+
+            try
+            {
+                return Optional.Of(Parse(value, targetType, culture));
+            }
+            catch (FormatException)
+            {
+                return Optional.Empty<object>();
+            }
+        }
+
+
+
+        /// <summary>
         /// Try to parese the given string to the given type. Returns an optional result, depending on success.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -57,7 +80,28 @@ namespace Archimedes.Patterns.Utils
         }
 
         /// <summary>
-        /// 
+        /// Try to parese the given string to the given type. Returns an optional result, depending on success.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
+        public static Optional<object> ParseSave(string value, Type targetType, CultureInfo culture = null)
+        {
+            if (value == null) return Optional.Empty<object>();
+
+            try
+            {
+                return Optional.Of(Parse(value, targetType, culture));
+            }
+            catch (FormatException)
+            {
+                return Optional.Empty<object>();
+            }
+        }
+
+        /// <summary>
+        ///  Parses the given object to the desired type. If this is not possible, an FormatException is thrown.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value"></param>
@@ -68,13 +112,28 @@ namespace Archimedes.Patterns.Utils
         public static T Parse<T>(object value, CultureInfo culture = null)
         {
             if (value == null) throw new ArgumentNullException("value");
+            return (T)Parse(value, typeof(T), culture);
+        }
+
+        /// <summary>
+        ///  Parses the given object to the desired type. If this is not possible, an FormatException is thrown.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="FormatException"></exception>
+        public static object Parse(object value, Type targetType, CultureInfo culture = null)
+        {
+            if (value == null) throw new ArgumentNullException("value");
             culture = culture ?? DefaultCulture;
 
-            if (typeof (T) == value.GetType())
+            if (targetType == value.GetType())
             {
-                return (T) value;
+                return value;
             }
-            return Parse<T>(Convert.ToString(value, culture));
+            return Parse(Convert.ToString(value, culture), targetType, culture);
         }
 
         /// <summary>
@@ -88,26 +147,40 @@ namespace Archimedes.Patterns.Utils
         /// <exception cref="FormatException"></exception>
         public static T Parse<T>(string value, CultureInfo culture = null)
         {
+            return (T)Parse(value, typeof(T), culture);
+        }
+
+        /// <summary>
+        ///  Parses the given string to the desired type. If this is not possible, an FormatException is thrown.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="culture">Optionally specify the culture.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="FormatException"></exception>
+        public static object Parse(string value, Type targetType, CultureInfo culture = null)
+        {
             if (value == null) throw new ArgumentNullException("value");
             culture = culture ?? DefaultCulture;
 
 
             // First try to handle specail cases
 
-            if (typeof (T) == typeof(string)) return (T)(object)value;
+            if (targetType == typeof(string)) return value;
 
-            if (typeof(T).IsEnum) return EnumTryParse<T>(value);
+            if (targetType.IsEnum) return EnumTryParse(targetType, value);
 
-            if (typeof(T) == typeof(Guid)) return (T)(object)ParseGuid(value);
+            if (targetType == typeof(Guid)) return ParseGuid(value);
 
             // Hande the remainig cases with a generic converter
             try
             {
-                return (T)Convert.ChangeType(value, typeof(T), culture);
+                return Convert.ChangeType(value, targetType, culture);
             }
             catch (Exception e)
             {
-                throw new FormatException(string.Format("Failed to parse string '{0}' to an {1} with culture {2}!", value, typeof(T), culture), e);
+                throw new FormatException(string.Format("Failed to parse string '{0}' to an {1} with culture {2}!", value, targetType, culture), e);
             }
         }
 
@@ -138,9 +211,16 @@ namespace Archimedes.Patterns.Utils
         /// <returns></returns>
         private static T EnumTryParse<T>(string str)
         {
-            if (!typeof(T).IsEnum)
+            return (T)EnumTryParse(typeof(T), str);
+        }
+
+
+        private static object EnumTryParse(Type enumType, string str)
+        {
+
+            if (!enumType.IsEnum)
             {
-                throw new ArgumentException(string.Format("You must only use Enum Types for parameter T! '{0}' is not an enum type!", typeof(T)));
+                throw new ArgumentException(string.Format("You must only use Enum Types for parameter T! '{0}' is not an enum type!", enumType));
             }
 
             var enumIndexO = ParseSave<int>(str);
@@ -148,28 +228,30 @@ namespace Archimedes.Patterns.Utils
             if (enumIndexO.IsPresent)
             {
                 int enumIndex = enumIndexO.Value;
-                T enumValue = (T)(object)enumIndex; // This allows any number to be converted in an Enum
+                object enumValue = enumIndex; // This allows any number to be converted in an Enum
 
-                if (!Enum.IsDefined(typeof(T), enumValue))
+                if (!Enum.IsDefined(enumType, enumValue))
                 {
-                    throw new FormatException(string.Format("The enum Index {0} does not exist in Enum {1}", enumIndex, typeof(T)));
+                    throw new FormatException(string.Format("The enum Index {0} does not exist in Enum {1}", enumIndex, enumType));
                 }
 
                 return enumValue;
             }
             else
             {
-                foreach (string en in Enum.GetNames(typeof(T)))
+                foreach (string en in Enum.GetNames(enumType))
                 {
                     if (en.Equals(str, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        return (T)Enum.Parse(typeof(T), str, true);
+                        return Enum.Parse(enumType, str, true);
                     }
                 }
 
-                throw new FormatException(string.Format("The value '{0}' is not a valid member of enum {1}", str, typeof(T)));
+                throw new FormatException(string.Format("The value '{0}' is not a valid member of enum {1}", str, enumType));
             }
         }
+
+
 
         #endregion
 
