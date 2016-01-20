@@ -217,11 +217,9 @@ namespace Archimedes.Patterns.Utils
 
         private static object EnumTryParse(Type enumType, string str)
         {
+            if (!enumType.IsEnum) throw new ArgumentException(string.Format("You must only use Enum Types for parameter T! '{0}' is not an enum type!", enumType));
 
-            if (!enumType.IsEnum)
-            {
-                throw new ArgumentException(string.Format("You must only use Enum Types for parameter T! '{0}' is not an enum type!", enumType));
-            }
+            if (string.IsNullOrEmpty(str)) throw new FormatException("An empty string can not be parsed to an Enum.");
 
             var enumIndexO = ParseSave<int>(str);
 
