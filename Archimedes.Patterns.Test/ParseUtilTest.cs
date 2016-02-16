@@ -7,6 +7,8 @@ namespace Archimedes.Patterns.Test
     [TestFixture]
     public class ParseUtilTest
     {
+        #region Unsave Parse methods
+
         [Test]
         public void TestSimple()
         {
@@ -140,5 +142,34 @@ namespace Archimedes.Patterns.Test
 
 
         }
+
+        #endregion
+
+        #region Save Parse methods
+
+
+        [Test]
+        public void TestSimpleSave()
+        {
+            Assert.AreEqual("hello world", ParseUtil.ParseSave<string>("hello world").Value);
+            Assert.AreEqual(12, ParseUtil.ParseSave<int>("12").Value);
+            Assert.AreEqual(321333423433, ParseUtil.ParseSave<long>("321333423433").Value);
+            Assert.AreEqual(3213.33423433f, ParseUtil.ParseSave<float>("3213.33423433").Value);
+            Assert.AreEqual(3213.33423433, ParseUtil.ParseSave<double>("3213.33423433").Value);
+        }
+
+        [Test]
+        public void TestSimpleSaveFails()
+        {
+           
+            Assert.AreEqual(false, ParseUtil.ParseSave<double>("abc").IsPresent);
+            Assert.AreEqual(false, ParseUtil.ParseSave<int>("abc").IsPresent);
+            Assert.AreEqual(false, ParseUtil.ParseSave<bool>("abc").IsPresent);
+
+            Assert.AreEqual(true, ParseUtil.ParseSave<string>("abc").IsPresent);
+        }
+
+
+        #endregion
     }
 }

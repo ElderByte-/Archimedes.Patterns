@@ -231,18 +231,6 @@ namespace Archimedes.Patterns.Utils
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        private static T EnumTryParse<T>(string str)
-        {
-            return (T)EnumTryParse(typeof(T), str);
-        }
-
-
         private static object EnumTryParse(Type enumType, string str)
         {
             if (!enumType.IsEnum) throw new ArgumentException(string.Format("You must only use Enum Types for parameter T! '{0}' is not an enum type!", enumType));
