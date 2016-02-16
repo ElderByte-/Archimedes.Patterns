@@ -14,6 +14,8 @@ namespace Archimedes.Patterns.Utils
 
         private static readonly CultureInfo DefaultCulture = CultureInfo.CurrentUICulture;
 
+        #region Parse Save API
+
         /// <summary>
         /// Try to parese the given object to the given type. Returns an optional result, depending on success.
         /// </summary>
@@ -25,15 +27,16 @@ namespace Archimedes.Patterns.Utils
         {
             if (value == null) return Optional.Empty<T>();
 
-            try
+            culture = culture ?? DefaultCulture;
+
+            if (typeof(T) == value.GetType())
             {
-                return Optional.Of(Parse<T>(value, culture));
+                return Optional.Of(value).CastTo<T>();
             }
-            catch (FormatException)
-            {
-                return Optional.Empty<T>();
-            }
+
+            return ParseSave<T>(Convert.ToString(value, culture), culture);
         }
+
 
         /// <summary>
         /// Try to parese the given object to the given type. Returns an optional result, depending on success.
@@ -46,14 +49,14 @@ namespace Archimedes.Patterns.Utils
         {
             if (value == null) return Optional.Empty<object>();
 
-            try
+            culture = culture ?? DefaultCulture;
+
+            if (targetType == value.GetType())
             {
-                return Optional.Of(Parse(value, targetType, culture));
+                return Optional.Of(value);
             }
-            catch (FormatException)
-            {
-                return Optional.Empty<object>();
-            }
+
+            return ParseSave(Convert.ToString(value, culture), targetType, culture);
         }
 
 
@@ -67,17 +70,9 @@ namespace Archimedes.Patterns.Utils
         /// <returns></returns>
         public static Optional<T> ParseSave<T>(string value, CultureInfo culture = null)
         {
-            if (value == null) return Optional.Empty<T>();
-
-            try
-            {
-                return Optional.Of(Parse<T>(value, culture));
-            }
-            catch (FormatException)
-            {
-                return Optional.Empty<T>();
-            }
+            return ParseSave(value, typeof(T), culture).CastTo<T>();
         }
+
 
         /// <summary>
         /// Try to parese the given string to the given type. Returns an optional result, depending on success.
@@ -88,17 +83,37 @@ namespace Archimedes.Patterns.Utils
         /// <returns></returns>
         public static Optional<object> ParseSave(string value, Type targetType, CultureInfo culture = null)
         {
+            culture = culture ?? DefaultCulture;
+
             if (value == null) return Optional.Empty<object>();
 
+            // First try to handle specail cases
+
+            if (targetType == typeof(string)) return Optional.Of(value).CastTo<object>();
+
+            if (targetType.IsEnum) return TryParseEnum(targetType, value);
+
+            if (targetType == typeof(Guid)) return TryParseGuid(value).CastTo<object>();
+
+            if (targetType == typeof(bool)) return TryParseBoolean(value).CastTo<object>();
+
+
+            // Hande the remainig cases with a generic converter
             try
             {
-                return Optional.Of(Parse(value, targetType, culture));
+                var obj = Convert.ChangeType(value, targetType, culture);
+                return Optional.Of(obj);
             }
-            catch (FormatException)
+            catch (Exception)
             {
                 return Optional.Empty<object>();
             }
         }
+
+
+        #endregion
+
+        #region Parse API
 
         /// <summary>
         ///  Parses the given object to the desired type. If this is not possible, an FormatException is thrown.
@@ -162,30 +177,12 @@ namespace Archimedes.Patterns.Utils
         public static object Parse(string value, Type targetType, CultureInfo culture = null)
         {
             if (value == null) throw new ArgumentNullException("value");
-            culture = culture ?? DefaultCulture;
 
-
-            // First try to handle specail cases
-
-            if (targetType == typeof(string)) return value;
-
-            if (targetType.IsEnum) return EnumTryParse(targetType, value);
-
-            if (targetType == typeof(Guid)) return ParseGuid(value);
-
-            if (targetType == typeof(bool)) return ParseBoolean(value);
-
-
-            // Hande the remainig cases with a generic converter
-            try
-            {
-                return Convert.ChangeType(value, targetType, culture);
-            }
-            catch (Exception e)
-            {
-                throw new FormatException(string.Format("Failed to parse string '{0}' to an {1} with culture {2}!", value, targetType, culture), e);
-            }
+            return ParseSave(value, targetType, culture).OrElseThrow(
+                () => new FormatException(string.Format("Failed to parse '{0}' to '{1}' with culture {2}!", value, targetType, culture)));
         }
+
+        #endregion
 
         #region Private parse helpers
 
@@ -195,7 +192,7 @@ namespace Archimedes.Patterns.Utils
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="FormatException">Thrown when the string is not a valid boolean</exception>
-        private static bool ParseBoolean(string value)
+        private static Optional<bool> TryParseBoolean(string value)
         {
             value = value.Trim().ToLowerInvariant();
 
@@ -203,39 +200,38 @@ namespace Archimedes.Patterns.Utils
             {
                     case "1":
                     case "true":
-                        return true;
+                        return Optional.Of(true);
 
                     case "0":
                     case "false":
-                        return false;
+                    return Optional.Of(false);
 
                 default:
-                    throw new FormatException(string.Format("Can not parse '{0}' into Boolean!"));                 
+                    return Optional.Empty<bool>();
             }
         }
 
         /// <summary>
         /// Parses the given string to an double
         /// </summary>
-        /// <exception cref="FormatException">Thrown when the string is not a valid double number</exception>
         /// <param name="str"></param>
         /// <returns></returns>
-        private static Guid ParseGuid(string str)
+        private static Optional<Guid> TryParseGuid(string str)
         {
             Guid value;
             if (Guid.TryParse(str, out value))
             {
-                return value;
+                return Optional.Of(value);
             }
-            throw new FormatException(string.Format("Failed to parse string '{0}' to an Guid!", str));
+            return Optional.Empty<Guid>();
         }
 
 
-        private static object EnumTryParse(Type enumType, string str)
+        private static Optional<object> TryParseEnum(Type enumType, string str)
         {
             if (!enumType.IsEnum) throw new ArgumentException(string.Format("You must only use Enum Types for parameter T! '{0}' is not an enum type!", enumType));
 
-            if (string.IsNullOrEmpty(str)) throw new FormatException("An empty string can not be parsed to an Enum.");
+            if (string.IsNullOrEmpty(str)) return Optional.Empty<object>();
 
             var enumIndexO = ParseSave<int>(str);
 
@@ -246,10 +242,10 @@ namespace Archimedes.Patterns.Utils
 
                 if (!Enum.IsDefined(enumType, enumValue))
                 {
-                    throw new FormatException(string.Format("The enum Index {0} does not exist in Enum {1}", enumIndex, enumType));
+                    return Optional.Empty<object>();
                 }
 
-                return enumValue;
+                return Optional.Of(enumValue);
             }
             else
             {
@@ -257,11 +253,11 @@ namespace Archimedes.Patterns.Utils
                 {
                     if (en.Equals(str, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        return Enum.Parse(enumType, str, true);
+                        return Optional.Of(Enum.Parse(enumType, str, true));
                     }
                 }
 
-                throw new FormatException(string.Format("The value '{0}' is not a valid member of enum {1}", str, enumType));
+                return Optional.Empty<object>();
             }
         }
 
