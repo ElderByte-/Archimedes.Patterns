@@ -15,7 +15,44 @@ namespace Archimedes.Patterns.Test
             Assert.AreEqual(321333423433, ParseUtil.Parse<long>("321333423433"));
             Assert.AreEqual(3213.33423433f, ParseUtil.Parse<float>("3213.33423433"));
             Assert.AreEqual(3213.33423433, ParseUtil.Parse<double>("3213.33423433"));
+        }
+
+        [Test]
+        public void TestBooleans()
+        {
             Assert.AreEqual(true, ParseUtil.Parse<bool>("true"));
+            Assert.AreEqual(false, ParseUtil.Parse<bool>("false"));
+        }
+
+        [Test]
+        public void TestIllegalBooleans()
+        {
+            Assert.Throws<FormatException>(() => ParseUtil.Parse<bool>("blub"));
+        }
+
+
+
+        [Test]
+        public void TestBooleansCase()
+        {
+            Assert.AreEqual(true, ParseUtil.Parse<bool>("True"));
+            Assert.AreEqual(false, ParseUtil.Parse<bool>("False"));
+            Assert.AreEqual(true, ParseUtil.Parse<bool>("TRUE"));
+            Assert.AreEqual(false, ParseUtil.Parse<bool>("FALSE"));
+        }
+
+        [Test]
+        public void TestBooleanNumeric()
+        {
+            Assert.AreEqual(true, ParseUtil.Parse<bool>(1));
+            Assert.AreEqual(false, ParseUtil.Parse<bool>(0));
+        }
+
+        [Test]
+        public void TestBooleanNumericStrings()
+        {
+            Assert.AreEqual(true, ParseUtil.Parse<bool>("1"));
+            Assert.AreEqual(false, ParseUtil.Parse<bool>("0"));
         }
 
         [Test]
@@ -40,17 +77,15 @@ namespace Archimedes.Patterns.Test
         }
 
         [Test]
-        [ExpectedException(typeof(FormatException))]
         public void TestParseEnumsFailName()
         {
-            Assert.AreEqual(TestEnum.Entry2, ParseUtil.Parse<TestEnum>("Entry2uuuu"));
+            Assert.Throws<FormatException>(() => ParseUtil.Parse<TestEnum>("Entry2uuuu"));
         }
 
         [Test]
-        [ExpectedException(typeof(FormatException))]
         public void TestParseEnumsFailIndex()
         {
-            var enumVal = ParseUtil.Parse<TestEnum>("12");
+            Assert.Throws<FormatException>(() => ParseUtil.Parse<TestEnum>("12"));
         }
 
         [Test]

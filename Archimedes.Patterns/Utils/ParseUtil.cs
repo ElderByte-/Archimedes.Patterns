@@ -173,6 +173,9 @@ namespace Archimedes.Patterns.Utils
 
             if (targetType == typeof(Guid)) return ParseGuid(value);
 
+            if (targetType == typeof(bool)) return ParseBoolean(value);
+
+
             // Hande the remainig cases with a generic converter
             try
             {
@@ -185,6 +188,31 @@ namespace Archimedes.Patterns.Utils
         }
 
         #region Private parse helpers
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        /// <exception cref="FormatException">Thrown when the string is not a valid boolean</exception>
+        private static bool ParseBoolean(string value)
+        {
+            value = value.Trim().ToLowerInvariant();
+
+            switch (value)
+            {
+                    case "1":
+                    case "true":
+                        return true;
+
+                    case "0":
+                    case "false":
+                        return false;
+
+                default:
+                    throw new FormatException(string.Format("Can not parse '{0}' into Boolean!"));                 
+            }
+        }
 
         /// <summary>
         /// Parses the given string to an double
