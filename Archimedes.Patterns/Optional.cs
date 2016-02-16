@@ -132,7 +132,19 @@ namespace Archimedes.Patterns
         /// <returns></returns>
         public T OrElse(Func<T> elseProvider)
         {
+            if (IsPresent) return Value;
             return elseProvider();
+        }
+
+        /// <summary>
+        /// Returns the value if available, otherwise throws the provided exception
+        /// </summary>
+        /// <param name="elseProvider"></param>
+        /// <returns></returns>
+        public T OrElseThrow(Func<Exception> elseProvider)
+        {
+            if (IsPresent) return Value;
+            throw elseProvider();
         }
 
         /// <summary>
@@ -206,6 +218,16 @@ namespace Archimedes.Patterns
             {
                 consumer(Value);
             }
+        }
+
+        /// <summary>
+        /// Forces this optional to be casted
+        /// </summary>
+        /// <typeparam name="TNew"></typeparam>
+        /// <returns></returns>
+        public Optional<TNew> CastTo<TNew>()
+        {
+            return Map(val => (TNew)(object)val);
         }
 
         #endregion
